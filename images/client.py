@@ -64,5 +64,5 @@ class Client:
         for image_id in ids:
             try:
                 self.docker_client.remove_container(image_id, force=True)
-            except errors.APIError:
-                print "Could not remove %s" % image_id
+            except errors.APIError, e:
+                print "Could not remove %s" % image_id % " because of %s" % str(e)

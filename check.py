@@ -66,6 +66,7 @@ class SearchAndValidate:
     def _save_result(self, result):
         if os.path.exists('results.txt'):
             os.remove('results.txt')
+            print result
         with open('results.txt', mode='w') as out_file:
             print >>out_file, 'Following images could not be pulled'
             print >>out_file, '\n'.join(result)
