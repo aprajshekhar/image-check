@@ -32,8 +32,7 @@ class SearchAndValidate:
             # result_queue.put({image: result})
             if result is False:
                 # result_dict[image] = 'Image is not valid'
-                result_list.append(image)
-
+                result_list.append(image_name)
         return result_list
 
     def start_check(self, environment='ci'):
