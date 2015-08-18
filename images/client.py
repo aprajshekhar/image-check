@@ -22,8 +22,11 @@ class Client:
         try:
             response = self.docker_client.pull(name, tag=tag_name, stream=True)
             return self._check_response(response)
-        except errors.APIError:
+        except errors.APIError, errors:
             return False
+        except Exception:
+            return False
+
 
     def _check_response(self, response):
         image_exist = True
