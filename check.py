@@ -6,7 +6,7 @@ import yaml
 import argparse
 import Queue
 import os
-
+import time
 
 class SearchAndValidate:
     """
@@ -29,7 +29,10 @@ class SearchAndValidate:
             image_name = image_tag[0]
             tag = image_tag[1] if len(image_tag) > 1 else 'latest'
             result = self.docker_client.pull_image(image_name, tag)
+            print "Waiting for 1 min before next pull"
+            time.sleep(60)
             # result_queue.put({image: result})
+
             if result is False:
                 result_list.append(image_name)
                 print "result list is %s" % result_list
@@ -57,12 +60,13 @@ class SearchAndValidate:
         self._save_result(result_list)
         self._remove_images()
 
-        if len(result) > 0:
+        if len(result_list) > 0:
             raise Exception('All the images could not be pulled')
 
     def _remove_images(self):
         for image in list(self.queue.queue):
             self.docker_client.remove(image)
+            print "Waiting for 30 seconds before removing next pulled image"
 
     def _save_result(self, result):
         print result
