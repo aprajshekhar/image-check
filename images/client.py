@@ -62,6 +62,8 @@ class Client:
             self.docker_client.remove_image(name, force=True)
         except errors.APIError:
             print "Could not remove %s" % name
+        except Exception, e:
+            print "Could not remove image due to exception %s" % e.message
 
     def _remove_container(self, image_name):
         ids = self.docker_client.images(name=image_name, quiet=True)
@@ -72,4 +74,5 @@ class Client:
             except errors.APIError, e:
                 print "Could not remove %s" % image_id
                 print "Error is %s" % e.response
-                # print(traceback.format_exc())
+            except Exception, e:
+                print "Could not remove container due to exception %s" % e.message
