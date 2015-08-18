@@ -25,7 +25,10 @@ class SearchAndValidate:
         # result_queue = Queue.Queue()
         result_list = []
         for image in list(self.queue.queue):
-            result = self.docker_client.pull_image(image)
+            image_tag = image.split(':')
+            image_name = image_tag[0]
+            tag = image_tag[1] if len(image_tag) > 1 else None
+            result = self.docker_client.pull_image(image_name, tag)
             # result_queue.put({image: result})
             if result is False:
                 # result_dict[image] = 'Image is not valid'
@@ -53,6 +56,8 @@ class SearchAndValidate:
         result = self.__process_image_queue()
         self._remove_images()
         self._save_result(result)
+        if len(result) > 0:
+            raise Exception('All the images could not be pulled')
 
     def _remove_images(self):
         for image in list(self.queue.queue):
@@ -61,9 +66,9 @@ class SearchAndValidate:
     def _save_result(self, result):
         if os.path.exists('results.txt'):
             os.remove('results.txt')
-        with open('results.txt', mode='w+') as out_file:
-            out_file.write('Following images could not be pulled')
-            out_file.write('\n'.join(result))
+        with open('results.txt', mode='w') as out_file:
+            print >>out_file, 'Following images could not be pulled'
+            print >>out_file, '\n'.join(result)
 
 
 def parse_arg():
