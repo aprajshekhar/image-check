@@ -1,3 +1,5 @@
+import traceback
+
 __author__ = 'A.P. Rajshekhar'
 
 import docker
@@ -65,4 +67,5 @@ class Client:
             try:
                 self.docker_client.remove_container(image_id, force=True)
             except errors.APIError, e:
-                print "Could not remove %s" % image_id % " because of %s" % str(e)
+                print "Could not remove %s" % image_id
+                print(traceback.format_exc())

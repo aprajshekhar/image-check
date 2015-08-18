@@ -27,7 +27,7 @@ class SearchAndValidate:
         for image in list(self.queue.queue):
             image_tag = image.split(':')
             image_name = image_tag[0]
-            tag = image_tag[1] if len(image_tag) > 1 else None
+            tag = image_tag[1] if len(image_tag) > 1 else 'latest'
             result = self.docker_client.pull_image(image_name, tag)
             # result_queue.put({image: result})
             if result is False:
@@ -64,10 +64,10 @@ class SearchAndValidate:
             self.docker_client.remove(image)
 
     def _save_result(self, result):
-        if os.path.exists('results.txt'):
-            os.remove('results.txt')
+        if os.path.exists('./results.txt'):
+            os.remove('./results.txt')
             print result
-        with open('results.txt', mode='w') as out_file:
+        with open('./results.txt', mode='w') as out_file:
             print >>out_file, 'Following images could not be pulled'
             print >>out_file, '\n'.join(result)
 
