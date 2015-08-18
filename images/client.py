@@ -68,4 +68,5 @@ class Client:
                 self.docker_client.remove_container(image_id, force=True)
             except errors.APIError, e:
                 print "Could not remove %s" % image_id
-                print(traceback.format_exc())
+                print "Error is %s" % e.response
+                # print(traceback.format_exc())
