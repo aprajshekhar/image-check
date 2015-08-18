@@ -31,8 +31,8 @@ class SearchAndValidate:
             result = self.docker_client.pull_image(image_name, tag)
             # result_queue.put({image: result})
             if result is False:
-                # result_dict[image] = 'Image is not valid'
                 result_list.append(image_name)
+                print "result list is %s" % result_list
         return result_list
 
     def start_check(self, environment='ci'):
@@ -52,9 +52,11 @@ class SearchAndValidate:
             print result
             self.queue.put(result)
 
-        result = self.__process_image_queue()
+        result_list = self.__process_image_queue()
+        print "result list in check %s" % result_list
+        self._save_result(result_list)
         self._remove_images()
-        self._save_result(result)
+
         if len(result) > 0:
             raise Exception('All the images could not be pulled')
 
