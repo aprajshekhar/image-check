@@ -9,7 +9,7 @@ import docker.errors as errors
 
 class Client:
     def __init__(self):
-        self.docker_client = docker.Client(base_url='unix://var/run/docker.sock', timeout=20)
+        self.docker_client = docker.Client(base_url='unix://var/run/docker.sock', timeout=120)
 
     def pull_image(self, name, tag_name='latest'):
         """
