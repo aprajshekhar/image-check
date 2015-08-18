@@ -45,9 +45,15 @@ class Client:
         # print response_line
         data = json.loads(response_line)
         status = data.get('status')
-
+        print "status of pull %s" % status
+        error_detail = data.get('errorDetail')
+        print "error detail if present %s" % error_detail
         if status is not None and 'not found' in data.get('status'):
             return False
+        elif error_detail is not None:
+            return False
+        else:
+            return True
 
     def remove(self, name):
         """

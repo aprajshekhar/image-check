@@ -30,7 +30,7 @@ class SearchAndValidate:
             tag = image_tag[1] if len(image_tag) > 1 else 'latest'
             result = self.docker_client.pull_image(image_name, tag)
             print "Waiting for 1 min before next pull"
-            time.sleep(60)
+            time.sleep(30)
             # result_queue.put({image: result})
 
             if result is False:
