@@ -3,10 +3,10 @@ __author__ = 'A.P. Rajshekhar'
 import images.client as client
 import images.search as search
 import yaml
-import argparse
 import Queue
 import os
 import time
+
 
 class SearchAndValidate:
     """
@@ -20,23 +20,25 @@ class SearchAndValidate:
         self.docker_client = client.Client()
         config_path = os.environ.get(SearchAndValidate.CONFIG_ENV_NAME) or SearchAndValidate.CONFIG_FILE_PATH
         self.config = yaml.safe_load(open(config_path))
+        self.pulled_images = []
+        self.failed_images = []
 
     def __process_image_queue(self):
         # result_queue = Queue.Queue()
-        result_list = []
         for image in list(self.queue.queue):
             image_tag = image.split(':')
             image_name = image_tag[0]
             tag = image_tag[1] if len(image_tag) > 1 else 'latest'
             result = self.docker_client.pull_image(image_name, tag)
-            print "Waiting for 1 min before next pull"
+            print "Waiting for 30 sec before next pull"
             time.sleep(30)
-            # result_queue.put({image: result})
 
             if result is False:
-                result_list.append(image_name)
-                print "result list is %s" % result_list
-        return result_list
+                self.failed_images.append(image_name)
+                print "result list is %s" % self.failed_images
+            else:
+                self.pulled_images.append(image_name)
+                print "result list for pulled images is %s" % self.pulled_images
 
     def start_check(self, environment='ci'):
         """
@@ -55,38 +57,28 @@ class SearchAndValidate:
             print result
             self.queue.put(result)
 
-        result_list = self.__process_image_queue()
-        print "result list in check %s" % result_list
-        self._save_result(result_list)
+        self.__process_image_queue()
+        print "failed images list in start_check %s" % self.failed_images
+        print "pulled images list in start_check is %s" % self.pulled_images
+        self._save_result()
         self._remove_images()
 
-        if len(result_list) > 0:
-            raise Exception('All the images could not be pulled')
+        if len(self.failed_images) > 0:
+            raise Exception('%s the images could not be pulled' % self.failed_images)
 
     def _remove_images(self):
         for image in list(self.queue.queue):
             self.docker_client.remove(image)
             print "Waiting for 30 seconds before removing next pulled image"
 
-    def _save_result(self, result):
-        print result
+    def _save_result(self):
         if os.path.exists('./results.txt'):
             os.remove('./results.txt')
 
         with open('./results.txt', mode='w') as out_file:
-            print >>out_file, 'Following images could not be pulled'
-            print >>out_file, '\n'.join(result)
-
-
-def parse_arg():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--env", help="the environment against which to run search")
-    args = parser.parse_args()
-    if args.env:
-        return args.env
-    else:
-        return 'ci'
-
-if __name__ == '__main__':
-    check_image = SearchAndValidate()
-    check_image.start_check(parse_arg())
+            if len(self.failed_images) > 0:
+                print >>out_file, 'Following images could not be pulled'
+                print >>out_file, '\n'.join(self.failed_images)
+            if len(self.pulled_images) > 0:
+                print >>out_file, '\nFollowing images have been pulled'
+                print >>out_file, '\n'.join(self.pulled_images)

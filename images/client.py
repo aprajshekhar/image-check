@@ -20,9 +20,11 @@ class Client:
         :return: True if the image can be pulled, false if it cannot be
         """
         try:
+            print "name %s" % name
+            print "tag %s" % tag_name
             response = self.docker_client.pull(name, tag=tag_name, stream=True)
             return self._check_response(response)
-        except errors.APIError, errors:
+        except errors.APIError:
             return False
         except Exception:
             return False
@@ -61,10 +63,10 @@ class Client:
         :param name: name of the image to be removed
         :return: response
         """
-
-        print "removing %s" % name
+        image_tags = name.split(":")
+        print "removing %s" % image_tags[0]
         try:
-            self._remove_container(name)
+            self._remove_container(image_tags[0])
             self.docker_client.remove_image(name, force=True)
         except errors.APIError:
             print "Could not remove %s" % name

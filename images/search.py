@@ -27,6 +27,10 @@ class StrataSearch:
 
     def _parse_response(self, data):
         for item in data['response']['docs']:
+            if 'c_pull_command' not in item:
+                print "%s does not have pull command" % item.get('allTitle')
+                continue
+
             for value in item.get('c_pull_command'):
                     name = value.replace('docker pull', '', 1).strip()
                     yield name
