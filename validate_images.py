@@ -6,7 +6,8 @@ import yaml
 import Queue
 import os
 import time
-
+import file_utils
+import image_check_exceptions
 
 class SearchAndValidate:
     """
@@ -22,6 +23,7 @@ class SearchAndValidate:
         self.config = yaml.safe_load(open(config_path))
         self.pulled_images = []
         self.failed_images = []
+        file_utils.delete_file()
 
     def __process_image_queue(self):
         # result_queue = Queue.Queue()
@@ -64,7 +66,9 @@ class SearchAndValidate:
         self._remove_images()
 
         if len(self.failed_images) > 0:
-            raise Exception('%s the images could not be pulled' % self.failed_images)
+            message = '%s the images could not be pulled' % self.failed_images
+            print message
+            raise image_check_exceptions.ImageCheckException(message)
 
     def _remove_images(self):
         for image in list(self.queue.queue):
@@ -72,9 +76,7 @@ class SearchAndValidate:
             print "Waiting for 30 seconds before removing next pulled image"
 
     def _save_result(self):
-        if os.path.exists('./results.txt'):
-            os.remove('./results.txt')
-
+        file_utils.delete_file()
         with open('./results.txt', mode='w') as out_file:
             if len(self.failed_images) > 0:
                 print >>out_file, 'Following images could not be pulled'
