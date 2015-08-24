@@ -32,8 +32,6 @@ class SearchAndValidate:
             image_name = image_tag[0]
             tag = image_tag[1] if len(image_tag) > 1 else 'latest'
             result = self.docker_client.pull_image(image_name, tag)
-            print "Waiting for 30 sec before next pull"
-            time.sleep(30)
 
             if result is False:
                 self.failed_images.append(image_name)
@@ -41,6 +39,9 @@ class SearchAndValidate:
             else:
                 self.pulled_images.append(image_name)
                 print "result list for pulled images is %s" % self.pulled_images
+
+            print "Waiting for 30 sec before next pull"
+            time.sleep(30)
 
     def start_check(self, environment='ci'):
         """
