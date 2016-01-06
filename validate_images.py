@@ -1,13 +1,14 @@
-__author__ = 'A.P. Rajshekhar'
-
-import images.client as client
-import images.search as search
 import yaml
 import Queue
 import os
 import time
 import file_utils
 import image_check_exceptions
+import images.process_executor as docker_client
+import images.search as search
+
+__author__ = 'A.P. Rajshekhar'
+
 
 class SearchAndValidate:
     """
@@ -18,7 +19,7 @@ class SearchAndValidate:
 
     def __init__(self):
         self.queue = Queue.Queue()
-        self.docker_client = client.Client()
+        self.docker_client = docker_client.DockerClient()
         config_path = os.environ.get(SearchAndValidate.CONFIG_ENV_NAME) or SearchAndValidate.CONFIG_FILE_PATH
         self.config = yaml.safe_load(open(config_path))
         self.pulled_images = []
@@ -27,6 +28,7 @@ class SearchAndValidate:
 
     def __process_image_queue(self):
         # result_queue = Queue.Queue()
+        print('in process image')
         for image in list(self.queue.queue):
             image_tag = image.split(':')
             image_name = image_tag[0]

@@ -1,5 +1,3 @@
-import traceback
-
 __author__ = 'A.P. Rajshekhar'
 
 import docker
