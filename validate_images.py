@@ -66,8 +66,8 @@ class SearchAndValidate:
         print "failed images list in start_check %s" % self.failed_images
         print "pulled images list in start_check is %s" % self.pulled_images
         self._save_result()
-        self._remove_images()
-
+        # self._remove_images()
+        print "length of unsuccessful pull %s" % len(self.failed_images)
         if len(self.failed_images) > 0:
             message = '%s the images could not be pulled' % self.failed_images
             print message
