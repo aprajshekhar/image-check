@@ -20,7 +20,7 @@ class StrataSearch:
 
         print response.url
         data = response.json()
-        print data
+        # print data
 
         result = self._parse_response(data)
         return result

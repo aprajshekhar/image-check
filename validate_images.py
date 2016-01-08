@@ -1,3 +1,4 @@
+import sys
 import yaml
 import Queue
 import os
@@ -43,7 +44,8 @@ class SearchAndValidate:
                 # print "result list for pulled images is %s" % self.pulled_images
 
             print "Waiting for 30 sec before next pull"
-            file.flush()
+            sys.stderr.flush()
+            sys.stdout.flush()
             time.sleep(30)
 
     def start_check(self, environment='ci'):
