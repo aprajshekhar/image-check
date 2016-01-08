@@ -22,7 +22,8 @@ if __name__ == '__main__':
         check_image.start_check(parse_arg())
     except ImageCheckException, e:
         raise
-    except:
+    except Exception, e:
+        print e
         file_utils.delete_file()
         file_utils.write("Build has thrown exception not related to pull of image. Please check.")
 
