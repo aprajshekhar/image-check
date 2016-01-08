@@ -62,7 +62,6 @@ class SearchAndValidate:
         search_client = search.StrataSearch(host+"rs/search")
         results = search_client.search(query_param)
         for result in results:
-            print result
             self.queue.put(result)
 
         self.__process_image_queue()
@@ -71,6 +70,8 @@ class SearchAndValidate:
         self._save_result()
         self._remove_images()
         print "length of unsuccessful pull %s" % len(self.failed_images)
+        sys.stderr.flush()
+        sys.stdout.flush()
         if len(self.failed_images) > 0:
             message = '%s the images could not be pulled' % self.failed_images
             print message

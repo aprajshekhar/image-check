@@ -1,5 +1,7 @@
 import subprocess
 
+import sys
+
 
 class DockerClient:
     def pull_image(self, name, tag_name='latest'):
@@ -29,8 +31,11 @@ class DockerClient:
 
             if docker_remove.returncode != 0:
                 print('image '+image_tags[0]+' could not be removed')
-        except:
+        except Exception, e:
             print("Could not remove %s" % image_tags[0])
+            print("reason %s" % e)
+            sys.stdout.flush()
+            sys.stderr.flush()
 
     def _get_image_id(self, image_name):
         image_id = subprocess.check_output(['docker', 'images', '-q', image_name])
