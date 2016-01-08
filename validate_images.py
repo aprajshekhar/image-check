@@ -37,12 +37,13 @@ class SearchAndValidate:
 
             if result is False:
                 self.failed_images.append(image_name)
-                print "result list is %s" % self.failed_images
+                # print "result list is %s" % self.failed_images
             else:
                 self.pulled_images.append(image_name)
-                print "result list for pulled images is %s" % self.pulled_images
+                # print "result list for pulled images is %s" % self.pulled_images
 
             print "Waiting for 30 sec before next pull"
+            file.flush()
             time.sleep(30)
 
     def start_check(self, environment='ci'):
@@ -63,10 +64,10 @@ class SearchAndValidate:
             self.queue.put(result)
 
         self.__process_image_queue()
-        print "failed images list in start_check %s" % self.failed_images
-        print "pulled images list in start_check is %s" % self.pulled_images
+        # print "failed images list in start_check %s" % self.failed_images
+        # print "pulled images list in start_check is %s" % self.pulled_images
         self._save_result()
-        # self._remove_images()
+        self._remove_images()
         print "length of unsuccessful pull %s" % len(self.failed_images)
         if len(self.failed_images) > 0:
             message = '%s the images could not be pulled' % self.failed_images
@@ -76,7 +77,7 @@ class SearchAndValidate:
     def _remove_images(self):
         for image in list(self.queue.queue):
             self.docker_client.remove(image)
-            print "Waiting for 30 seconds before removing next pulled image"
+            # print "Waiting for 30 seconds before removing next pulled image"
 
     def _save_result(self):
         file_utils.delete_file()

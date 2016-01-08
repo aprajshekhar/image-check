@@ -18,15 +18,19 @@ class DockerClient:
     def remove(self, name):
         image_tags = name.split(":")
         print "removing %s" % image_tags[0]
-        image_id = self._get_image_id(image_tags[0])
-        docker_remove = subprocess.Popen(['docker', 'rmi', '--force', image_id], stderr=subprocess.PIPE)
 
-        for line in docker_remove:
-            print(line)
-        docker_remove.wait()
+        try:
+            image_id = self._get_image_id(image_tags[0])
+            docker_remove = subprocess.Popen(['docker', 'rmi', '--force', image_id], stderr=subprocess.PIPE)
 
-        if docker_remove.returncode != 0:
-            print('image '+image_tags[0]+' could not be removed')
+            for line in docker_remove:
+                print(line)
+            docker_remove.wait()
+
+            if docker_remove.returncode != 0:
+                print('image '+image_tags[0]+' could not be removed')
+        except:
+            print("Could not remove %s" % image_tags[0])
 
     def _get_image_id(self, image_name):
         image_id = subprocess.check_output(['docker', 'images', '-q', image_name])
