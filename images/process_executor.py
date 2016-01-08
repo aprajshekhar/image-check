@@ -23,7 +23,7 @@ class DockerClient:
 
         try:
             image_id = self._get_image_id(image_tags[0])
-            docker_remove = subprocess.Popen(['docker', 'rmi', '--force', image_tags[0]], stderr=subprocess.PIPE)
+            docker_remove = subprocess.Popen(['docker', 'rmi', '--force', name], stderr=subprocess.PIPE)
 
             for line in docker_remove.stderr:
                 print(line)
