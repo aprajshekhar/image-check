@@ -1,5 +1,4 @@
 ci:
-    host:
 
 fte:
     host:
@@ -9,3 +8,4 @@ prod:
     host:
 param:
 search_type:
+add_host: true

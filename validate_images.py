@@ -30,10 +30,13 @@ class SearchAndValidate:
 
     def __process_image_queue(self):
         # result_queue = Queue.Queue()
+
         print('in process image')
         for image in list(self.queue.queue):
             image_tag = image.split(':')
             image_name = image_tag[0]
+            if 'add_host' in self.config and self.config['add_host'] == 'true':
+                image_name = self.host + image_name
             tag = image_tag[1] if len(image_tag) > 1 else 'latest'
             result = self.docker_client.pull_image(image_name, tag)
 
@@ -57,11 +60,11 @@ class SearchAndValidate:
         :param environment: environment against which search has to be executed
         :return:
         """
-        host = self.config[environment]['host']
+        self.host = self.config[environment]['host']
         query_param = self.config['param']
         search_type = self.config['search_type']
 
-        search_client = search_images.SearchImages if search_type == 'ImageRepository' else search.StrataSearch(host+"rs/search")
+        search_client = search_images.SearchImages if search_type == 'ImageRepository' else search.StrataSearch(self.host+"rs/search")
         search_client.rows = 200
         results = list(search_client.search(query_param))
         results_paginated = [results[i:i+5] for i in range(0, len(results), 5)]
