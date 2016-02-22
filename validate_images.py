@@ -102,7 +102,7 @@ class SearchAndValidate:
         with open('./results.txt', mode='w') as out_file:
             if len(self.failed_images) > 0:
                 print >>out_file, 'Following images could not be pulled'
-                print >>out_file, '\n'.join(self.failed_images)
+                print >>out_file, '\n'.join(list(set(self.failed_images)))
             if len(self.pulled_images) > 0:
                 print >>out_file, '\nFollowing images have been pulled'
-                print >>out_file, '\n'.join(self.pulled_images)
+                print >>out_file, '\n'.join(list(set(self.pulled_images)))
