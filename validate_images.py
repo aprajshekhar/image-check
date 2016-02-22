@@ -67,7 +67,9 @@ class SearchAndValidate:
         search_client = search_images.SearchImages if search_type == 'ImageRepository' else search.StrataSearch(self.host+"rs/search")
         search_client.rows = 200
         results = list(search_client.search(query_param))
-        results_paginated = [results[i:i+5] for i in range(0, len(results), 5)]
+        results_paginated = [results[i:i+5] for i in range(0, len(results), 4)]
+
+        print "paginated results %s" % results_paginated
         for lists in results_paginated:
             for result in lists:
                 self.queue.put(result)
