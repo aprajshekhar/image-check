@@ -76,9 +76,9 @@ class SearchAndValidate:
         for lists in results_paginated:
             for result in lists:
                 self.queue.put(result)
-                self.__process_image_queue()
-                # print "failed images list in start_check %s" % self.failed_images
-                # print "pulled images list in start_check is %s" % self.pulled_images
+            self.__process_image_queue()
+            # print "failed images list in start_check %s" % self.failed_images
+            # print "pulled images list in start_check is %s" % self.pulled_images
             self._remove_images()
 
         self._save_result()
