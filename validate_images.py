@@ -7,6 +7,7 @@ import file_utils
 import image_check_exceptions
 import images.process_executor as docker_client
 import images.search as search
+from images import search_images
 
 __author__ = 'A.P. Rajshekhar'
 
@@ -58,17 +59,22 @@ class SearchAndValidate:
         """
         host = self.config[environment]['host']
         query_param = self.config['param']
+        search_type = self.config['search_type']
 
-        search_client = search.StrataSearch(host+"rs/search")
-        results = search_client.search(query_param)
-        for result in results:
-            self.queue.put(result)
+        search_client = search_images.SearchImages if search_type == 'ImageRepository' else search.StrataSearch(host+"rs/search")
+        search_client.rows = 200
+        results = list(search_client.search(query_param))
+        results_paginated = [results[i:i+5] for i in range(0, len(results), 5)]
+        for lists in results_paginated:
+            for result in lists:
+                self.queue.put(result)
+                self.__process_image_queue()
+                # print "failed images list in start_check %s" % self.failed_images
+                # print "pulled images list in start_check is %s" % self.pulled_images
+                self._remove_images()
 
-        self.__process_image_queue()
-        # print "failed images list in start_check %s" % self.failed_images
-        # print "pulled images list in start_check is %s" % self.pulled_images
         self._save_result()
-        self._remove_images()
+
         print "length of unsuccessful pull %s" % len(self.failed_images)
         sys.stderr.flush()
         sys.stdout.flush()
@@ -80,6 +86,7 @@ class SearchAndValidate:
     def _remove_images(self):
         for image in list(self.queue.queue):
             self.docker_client.remove(image)
+        self.queue.queue.clear()
             # print "Waiting for 30 seconds before removing next pulled image"
 
     def _save_result(self):

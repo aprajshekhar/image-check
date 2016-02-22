@@ -3,6 +3,9 @@ ci:
 
 fte:
     host:
+stage:
+    host:
 prod:
     host:
-param: -
+param:
+search_type:
