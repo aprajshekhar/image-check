@@ -70,6 +70,9 @@ class SearchAndValidate:
         results_paginated = [results[i:i+5] for i in range(0, len(results), 4)]
 
         print "paginated results %s" % results_paginated
+        sys.stderr.flush()
+        sys.stdout.flush()
+
         for lists in results_paginated:
             for result in lists:
                 self.queue.put(result)
