@@ -8,4 +8,4 @@ prod:
     host:
 param:
 search_type:
-add_host: true
+docker_host:
