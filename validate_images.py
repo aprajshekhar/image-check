@@ -63,8 +63,14 @@ class SearchAndValidate:
         self.host = self.config[environment]['host']
         query_param = self.config['param']
         search_type = self.config['search_type']
+        print "search host %s" % self.host
+        sys.stderr.flush()
+        sys.stdout.flush()
+        if search_type == 'ImageRepository':
+            search_client = search_images.SearchImages(self.host + "rs/search")
+        else:
+            search_client = search.StrataSearch(self.host + "rs/search")
 
-        search_client = search_images.SearchImages if search_type == 'ImageRepository' else search.StrataSearch(self.host+"rs/search")
         search_client.rows = 200
         results = list(search_client.search(query_param))
         results_paginated = [results[i:i+4] for i in range(0, len(results), 4)]
