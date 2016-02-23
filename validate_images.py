@@ -35,7 +35,7 @@ class SearchAndValidate:
         for image in self.queue:
             image_tag = image.split(':')
             image_name = image_tag[0]
-            if 'docker_host' in self.config:
+            if 'docker_host' in self.config and not self.config['docker_host'] is None:
                 image_name = self.config['docker_host'] + image_name
             tag = image_tag[1] if len(image_tag) > 1 else 'latest'
             result = self.docker_client.pull_image(image_name, tag)
