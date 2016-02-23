@@ -20,7 +20,7 @@ class SearchAndValidate:
     CONFIG_ENV_NAME = 'CONFIG_FILE_PATH'
 
     def __init__(self):
-        self.queue = Queue.Queue()
+        self.queue = []
         self.docker_client = docker_client.DockerClient()
         config_path = os.environ.get(SearchAndValidate.CONFIG_ENV_NAME) or SearchAndValidate.CONFIG_FILE_PATH
         self.config = yaml.safe_load(open(config_path))
@@ -32,7 +32,7 @@ class SearchAndValidate:
         # result_queue = Queue.Queue()
 
         print('in process image')
-        for image in list(self.queue.queue):
+        for image in self.queue:
             image_tag = image.split(':')
             image_name = image_tag[0]
             if 'add_host' in self.config and self.config['add_host'] == 'true':
@@ -67,7 +67,7 @@ class SearchAndValidate:
         search_client = search_images.SearchImages if search_type == 'ImageRepository' else search.StrataSearch(self.host+"rs/search")
         search_client.rows = 200
         results = list(search_client.search(query_param))
-        results_paginated = [results[i:i+5] for i in range(0, len(results), 4)]
+        results_paginated = [results[i:i+4] for i in range(0, len(results), 4)]
 
         print "paginated results %s" % results_paginated
         sys.stderr.flush()
@@ -75,7 +75,7 @@ class SearchAndValidate:
 
         for lists in results_paginated:
             for result in lists:
-                self.queue.put(result)
+                self.queue.append(result)
             self.__process_image_queue()
             # print "failed images list in start_check %s" % self.failed_images
             # print "pulled images list in start_check is %s" % self.pulled_images
@@ -87,15 +87,15 @@ class SearchAndValidate:
         sys.stderr.flush()
         sys.stdout.flush()
         if len(self.failed_images) > 0:
-            message = '%s the images could not be pulled' % self.failed_images
+            message = '%s the images could not be pulled' % list(set(self.failed_images))
             print message
             raise image_check_exceptions.ImageCheckException(message)
 
     def _remove_images(self):
-        for image in list(self.queue.queue):
+        for image in self.queue:
             self.docker_client.remove(image)
-        self.queue.queue.clear()
-            # print "Waiting for 30 seconds before removing next pulled image"
+        del self.queue[:]
+        # print "Waiting for 30 seconds before removing next pulled image"
 
     def _save_result(self):
         file_utils.delete_file()
