@@ -98,8 +98,10 @@ class SearchAndValidate:
             raise image_check_exceptions.ImageCheckException(message)
 
     def _remove_images(self):
-        for image in self.queue:
-            self.docker_client.remove(image)
+        for image_name in self.queue:
+            if 'docker_host' in self.config and not self.config['docker_host'] is None:
+                image_name = self.config['docker_host'] + image_name
+            self.docker_client.remove(image_name)
         del self.queue[:]
         # print "Waiting for 30 seconds before removing next pulled image"
 
